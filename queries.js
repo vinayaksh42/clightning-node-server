@@ -1,6 +1,6 @@
 const Pool = require('pg').Pool
 const pool = new Pool({
-  user: 'psql',
+  user: 'postgres',
   host: 'localhost',
   database: 'historian_bitcoin',
   password: 'password',
@@ -8,7 +8,7 @@ const pool = new Pool({
 })
 
 const getChannelInfo = (request, response) => {
-    pool.query('SELECT * FROM "channel_announcements"', (error, results) => {
+    pool.query('SELECT * FROM "channel_announcements";', (error, results) => {
       if (error) {
         throw error
       }
