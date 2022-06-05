@@ -13,10 +13,13 @@ var client = new pg.Client(conString);
 client.connect();
 
 const getChannelInfo = (request, response) => {
-    client.query('SELECT * FROM "channel_announcements";', (error, results) => {
+    client.query('SELECT * FROM "channel_announcements" LIMIT 1;', (error, results) => {
       if (error) {
         throw error
       }
+      results.rows.forEach(function(row) {
+        row.raw = row.raw.toString('hex');
+      });
       response.status(200).json(results.rows)
     })
 }
