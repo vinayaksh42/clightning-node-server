@@ -18,7 +18,7 @@ const getChannelInfo = (request, response) => {
         throw error
       }
       const temp = String.fromCharCode(results.rows[0].raw.data);
-      results.rows[0].raw.data = JSON.parse(temp);
+      results.rows[0].raw.data = temp;
       response.status(200).json(results.rows)
     })
 }
