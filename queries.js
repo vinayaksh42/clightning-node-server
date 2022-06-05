@@ -17,9 +17,9 @@ const getChannelInfo = (request, response) => {
       if (error) {
         throw error
       }
-      results.rows.forEach(function(row) {
-        row.raw = row.raw.toString('hex');
-      });
+      // results.rows.forEach(function(row) {
+      //   row.raw = row.raw.toString('hex');
+      // });
       response.status(200).json(results.rows)
     })
 }
