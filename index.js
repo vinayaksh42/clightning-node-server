@@ -1,6 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const db = require('./queries')
+const db = require('./routes/queries')
 const app = express()
 const port = 3000
 
