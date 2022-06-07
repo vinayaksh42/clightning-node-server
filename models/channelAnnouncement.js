@@ -1,4 +1,5 @@
 const channel_announcement = {
+    scid: '',
     signature: {
       node_signature_1: '',
       node_signature_2: '',

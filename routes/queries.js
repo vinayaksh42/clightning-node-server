@@ -1,6 +1,8 @@
 var pg = require('pg');
 const config = require('../config/default.json')
-var parser = require('../controllers/channelAnnouncement');
+var channelAnnouncement = require('../controllers/channelAnnouncement');
+var channelUpdate = require('../controllers/channelUpdate')
+
 
 // PostgreSQL connection
 const port = config.server.port
@@ -13,14 +15,24 @@ var client = new pg.Client(conString);
 client.connect();
 
 const getChannelInfo = (request, response) => {
-    client.query('SELECT * FROM "channel_announcements" LIMIT 2;', (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).json(parser.channelAnnouncementParser(results.rows[0].raw))
-    })
+  client.query('SELECT * FROM "channel_announcements" LIMIT 1;', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(channelAnnouncement.channelAnnouncementParser(results.rows[0].raw,results.rows[0].scid))
+  })
+}
+
+const getChannelUpdate = (request, response) => {
+  client.query('SELECT * FROM "channel_updates" LIMIT 1;', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(channelUpdate.channelUpdateParser(results.rows[0].raw,results.rows[0].scid,results.rows[0].direction,results.rows[0].timestamp))
+  })
 }
 
 module.exports = {
-    getChannelInfo
+    getChannelInfo,
+    getChannelUpdate
 }
