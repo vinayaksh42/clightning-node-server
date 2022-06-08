@@ -27,48 +27,58 @@ function channelAnnouncementParser(rawData,scid) {
         }
     }
 
+    let curr_index = 0;
+
     // Scid
     channel_announcement.scid = scid;
+    curr_index += 2;
 
     // node_signature_1
-    for (let hex of utils.hexFormatValues(rawData.slice(2, 66))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=64))) {
         channel_announcement.signature.node_signature_1 += hex
     } 
 
     // node_signature_2
-    for (let hex of utils.hexFormatValues(rawData.slice(66, 130))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=64))) {
         channel_announcement.signature.node_signature_2 += hex
     } 
 
     // bitcoin_signature_1
-    for (let hex of utils.hexFormatValues(rawData.slice(130, 194))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=64))) {
         channel_announcement.signature.bitcoin_signature_1 += hex
     } 
 
     // bitcoin_signature_2
-    for (let hex of utils.hexFormatValues(rawData.slice(194, 258))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=64))) {
         channel_announcement.signature.bitcoin_signature_2 += hex
     } 
 
     // features
-    for (let hex of utils.hexFormatValues(rawData.slice(258, 260))) {
+    let flen = ''
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=2))) {
+        flen += hex
+    }
+    flen = parseInt(flen, 16)
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=flen))) {
         channel_announcement.features += hex
     }
-    channel_announcement.features = parseInt(channel_announcement.features, 16)
+    if(channel_announcement.features === ''){
+        channel_announcement.features = '0'
+    }
 
     // chain_hash
-    for (let hex of utils.hexFormatValues(rawData.slice(260, 291))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=32).reverse())) {
         channel_announcement.chain_hash += hex
     }
 
     // short_channel_id
-    for (let hex of utils.hexFormatValues(rawData.slice(292, 295))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=3))) {
         channel_announcement.short_channel_id.block += hex
     } 
-    for (let hex of utils.hexFormatValues(rawData.slice(295, 298))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=3))) {
         channel_announcement.short_channel_id.tx_id += hex
     }
-    for (let hex of utils.hexFormatValues(rawData.slice(298, 300))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=2))) {
         channel_announcement.short_channel_id.output_index += hex
     }
     channel_announcement.short_channel_id.block = parseInt(channel_announcement.short_channel_id.block, 16)
@@ -78,22 +88,22 @@ function channelAnnouncementParser(rawData,scid) {
 
     // point
     // node_id_1
-    for (let hex of utils.hexFormatValues(rawData.slice(300, 333))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=33))) {
         channel_announcement.point.node_id_1 += hex
     }
 
     // node_id_2
-    for (let hex of utils.hexFormatValues(rawData.slice(333, 366))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=33))) {
         channel_announcement.point.node_id_2 += hex
     }
 
     // bitcoin_key_1
-    for (let hex of utils.hexFormatValues(rawData.slice(366, 399))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=33))) {
         channel_announcement.point.bitcoin_key_1 += hex
     }
 
     // bitcoin_key_2
-    for (let hex of utils.hexFormatValues(rawData.slice(399, 432))) {
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=33))) {
         channel_announcement.point.bitcoin_key_2 += hex
     }
 

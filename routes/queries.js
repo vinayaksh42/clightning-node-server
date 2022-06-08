@@ -19,6 +19,7 @@ const getChannelInfo = (request, response) => {
     if (error) {
       throw error
     }
+    console.log(results.rows[0].raw)
     response.status(200).json(channelAnnouncement.channelAnnouncementParser(results.rows[0].raw,results.rows[0].scid))
   })
 }
