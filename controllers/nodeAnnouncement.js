@@ -1,3 +1,4 @@
+const e = require('express');
 const utils = require('../utilities/utilities')
 
 
@@ -12,7 +13,11 @@ function nodeAnnouncementParser(rawData,node_id) {
         rgb_color: '',
         alias: '',
         abytes: '',
-        addresses: []
+        addresses: {
+            type: '',
+            address: '',
+            port: '',
+        }
     }
 
     let curr_index = 0;
@@ -64,16 +69,40 @@ function nodeAnnouncementParser(rawData,node_id) {
     } 
 
     // abytes
-    let alen = ''
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=2))) {
-        alen += hex
-    }
-    alen = parseInt(alen, 16)
-    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=alen))) {
         node_announcement.abytes += hex
     }
+    node_announcement.abytes = parseInt(node_announcement.abytes, 16)
 
-    // addresses
+    if(node_announcement.abytes){
+        for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=1))) {
+            node_announcement.addresses.type += hex
+        }
+        node_announcement.addresses.type = parseInt(node_announcement.addresses.type, 16)
+    }
+
+    if(node_announcement.addresses.type == 1){
+        for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=4))) {
+            node_announcement.addresses.address += hex
+        }
+    }else if(node_announcement.addresses.type == 2){
+        for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=16))) {
+            node_announcement.addresses.address += hex
+        }
+    }else if(node_announcement.addresses.type == 3){
+        for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=10))) {
+            node_announcement.addresses.address += hex
+        }
+    }else if(node_announcement.addresses.type == 4){
+        for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=35))) {
+            node_announcement.addresses.address += hex
+        }
+    }else{
+        console.log('unknown type')
+    }
+    for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=2))) {
+        node_announcement.addresses.port += hex
+    }
 
     return node_announcement;
 }
