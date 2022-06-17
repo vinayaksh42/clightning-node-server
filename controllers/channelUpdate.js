@@ -104,11 +104,11 @@ function channelUpdateParser(rawData,scid,direction,timestamp) {
     channel_update.fee_proportional_millionths = parseInt(channel_update.fee_proportional_millionths, 16)
 
     if(rawData.length == 138) {
-        // fee_proportional_millionths
+        // htlc_maximum_msat
         for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=8))) {
-            channel_update.fee_proportional_millionths += hex
+            channel_update.htlc_maximum_msat += hex
         }
-        channel_update.fee_proportional_millionths = parseInt(channel_update.fee_proportional_millionths, 16)
+        channel_update.htlc_maximum_msat = parseInt(channel_update.htlc_maximum_msat, 16)
     }
 
     return channel_update;
