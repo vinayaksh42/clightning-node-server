@@ -19,19 +19,17 @@ function channelAnnouncementParser(rawData,scid) {
         output_index: '',
         short_channel_id: ''
         },
-        point: {
         node_id_1: '',
         node_id_2: '',
         bitcoin_key_1: '',
         bitcoin_key_2: ''
-        }
     }
 
     let curr_index = 0;
-
+    curr_index += 2;// first two bytes are version
+    
     // Scid
     channel_announcement.scid = scid;
-    curr_index += 2;
 
     // node_signature_1
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=64))) {
@@ -89,22 +87,22 @@ function channelAnnouncementParser(rawData,scid) {
     // point
     // node_id_1
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=33))) {
-        channel_announcement.point.node_id_1 += hex
+        channel_announcement.node_id_1 += hex
     }
 
     // node_id_2
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=33))) {
-        channel_announcement.point.node_id_2 += hex
+        channel_announcement.node_id_2 += hex
     }
 
     // bitcoin_key_1
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=33))) {
-        channel_announcement.point.bitcoin_key_1 += hex
+        channel_announcement.bitcoin_key_1 += hex
     }
 
     // bitcoin_key_2
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=33))) {
-        channel_announcement.point.bitcoin_key_2 += hex
+        channel_announcement.bitcoin_key_2 += hex
     }
 
     return channel_announcement;
