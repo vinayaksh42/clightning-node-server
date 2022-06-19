@@ -71,13 +71,15 @@ function channelUpdateParser(rawData,scid,direction,timestamp) {
 
     // message_flags
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=1))) {
-        channel_update.signature.message_flags += hex
+        channel_update.message_flags += hex
     } 
+    channel_update.message_flags = parseInt(channel_update.message_flags, 16)
 
     // channel_flags
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=1))) {
-        channel_update.signature.channel_flags += hex
+        channel_update.channel_flags += hex
     } 
+    channel_update.channel_flags = parseInt(channel_update.channel_flags, 16)
 
     // cltv_expiry_delta
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=2))) {
