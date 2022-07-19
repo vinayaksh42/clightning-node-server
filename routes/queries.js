@@ -24,7 +24,7 @@ const getChannelInfo = (request, response) => {
 }
 
 const getChannelList = (request, response) => {
-  client.query(`SELECT * FROM "channel_announcements" LIMIT 5;`, (error, results) => {
+  client.query(`SELECT * FROM "channel_announcements" LIMIT 10;`, (error, results) => {
     if (error) {
       throw error
     }
@@ -37,7 +37,7 @@ const getChannelList = (request, response) => {
 }
 
 const getNodeList = (request, response) => {
-  client.query(`SELECT * FROM "node_announcements" LIMIT 5;`, (error, results) => {
+  client.query(`SELECT * FROM "node_announcements" LIMIT 10;`, (error, results) => {
     if (error) {
       throw error
     }
