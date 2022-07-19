@@ -18,6 +18,8 @@ app.get('/', (request, response) => {
 app.get('/channel_announcements', db.getChannelInfo)
 app.get('/channel_updates', db.getChannelUpdate)
 app.get('/node_announcements', db.nodeInfo)
+app.get('/channel_list', db.getChannelList)
+app.get('/node_list', db.getNodeList)
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)

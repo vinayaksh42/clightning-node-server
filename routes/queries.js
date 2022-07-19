@@ -23,6 +23,33 @@ const getChannelInfo = (request, response) => {
   })
 }
 
+const getChannelList = (request, response) => {
+  client.query(`SELECT * FROM "channel_announcements" LIMIT 5;`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    let channelList = []
+    for (let i = 0; i < results.rows.length; i++) {
+      channelList.push(channelAnnouncement.channelAnnouncementParser(results.rows[i].raw,results.rows[i].scid))
+    }
+    response.status(200).json(channelList)
+  })
+}
+
+const getNodeList = (request, response) => {
+  client.query(`SELECT * FROM "node_announcements" LIMIT 5;`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    let nodeList = []
+    for (let i = 0; i < results.rows.length; i++) {
+      nodeList.push(nodeAnnouncement.nodeAnnouncementParser(results.rows[i].raw,results.rows[i].node_id))
+    }
+    response.status(200).json(nodeList)
+  })
+}
+
+
 const getChannelUpdate = (request, response) => {
   client.query('SELECT * FROM "channel_updates" LIMIT 1;', (error, results) => {
     if (error) {
@@ -44,5 +71,7 @@ const nodeInfo = (request, response) => {
 module.exports = {
     getChannelInfo,
     getChannelUpdate,
-    nodeInfo
+    nodeInfo,
+    getChannelList,
+    getNodeList
 }
