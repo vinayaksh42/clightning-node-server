@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/vinayaksh42/clightning-node-server#readme",
   "dependencies": {
+    "cron": "^2.1.0",
     "express": "^4.18.1",
     "nodemon": "^2.0.16",
     "pg": "^8.7.3"

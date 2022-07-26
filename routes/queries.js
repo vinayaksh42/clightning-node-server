@@ -55,6 +55,7 @@ const getChannelUpdate = (request, response) => {
     if (error) {
       throw error
     }
+    console.log(results.rows[0].raw)
     response.status(200).json(channelUpdate.channelUpdateParser(results.rows[0].raw,results.rows[0].scid,results.rows[0].direction,results.rows[0].timestamp))
   })
 }
@@ -73,5 +74,5 @@ module.exports = {
     getChannelUpdate,
     nodeInfo,
     getChannelList,
-    getNodeList
+    getNodeList,
 }
