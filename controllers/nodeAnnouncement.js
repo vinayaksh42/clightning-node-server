@@ -98,7 +98,7 @@ function nodeAnnouncementParser(rawData,node_id) {
             node_announcement.addresses.address += hex
         }
     }else{
-        console.log('unknown type')
+        // do nothing
     }
     for (let hex of utils.hexFormatValues(rawData.slice(curr_index, curr_index+=2))) {
         node_announcement.addresses.port += hex

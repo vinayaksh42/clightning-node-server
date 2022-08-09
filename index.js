@@ -4,13 +4,15 @@ const db = require('./routes/queries')
 const app = express()
 const port = 3000
 const CronJob = require('cron').CronJob;
-const Jobs = require('./functions/index')
+const Channel = require('./functions/channelProfile');
+const Node = require('./functions/nodeProfile');
 
+// Cron Job for updating channel profile
 var job = new CronJob(
-	'47 * * * *',
+	'0 * * * *',
 	function() {
-		Jobs.createChannelProfile()
-    	Jobs.updateChannelProfile()
+		Channel.createChannelProfile()
+		Node.createNodeProfile()
 	},
 	null,
 	true,
@@ -24,14 +26,16 @@ app.use(
   })
 )
 
-app.get('/channel_announcements', db.getChannelInfo)
-app.get('/channel_updates', db.getChannelUpdate)
-app.get('/node_announcements', db.nodeInfo)
-app.get('/channel_list', db.getChannelList)
-app.get('/node_list', db.getNodeList)
+app.get('/channel_announcements', db.getChannelInfo);
+// app.get('/channel_updates', db.getChannelUpdate);
+app.get('/node_announcements', db.nodeInfo);
+app.get('/channel_profile/:scid', db.getChannelProfile);
+app.get('/channel_updates/:scid', db.getChannelUpdates)
 
 job.start();
 
 app.listen(port, () => {
-    console.log(`App running on port ${port}.`)
+    console.log(`App running on port ${port}.`);
 })
+
+Node.createNodeProfile()

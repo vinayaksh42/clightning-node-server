@@ -14,6 +14,7 @@ var conString = `${username}://${username}:${password}@${host}:${port}/${dbName}
 var client = new pg.Client(conString);
 client.connect();
 
+// Query for testing channel_announcements
 const getChannelInfo = (request, response) => {
   client.query('SELECT * FROM "channel_announcements" LIMIT 1;', (error, results) => {
     if (error) {
@@ -23,33 +24,7 @@ const getChannelInfo = (request, response) => {
   })
 }
 
-const getChannelList = (request, response) => {
-  client.query(`SELECT * FROM "channel_announcements" LIMIT 10;`, (error, results) => {
-    if (error) {
-      throw error
-    }
-    let channelList = []
-    for (let i = 0; i < results.rows.length; i++) {
-      channelList.push(channelAnnouncement.channelAnnouncementParser(results.rows[i].raw,results.rows[i].scid))
-    }
-    response.status(200).json(channelList)
-  })
-}
-
-const getNodeList = (request, response) => {
-  client.query(`SELECT * FROM "node_announcements" LIMIT 10;`, (error, results) => {
-    if (error) {
-      throw error
-    }
-    let nodeList = []
-    for (let i = 0; i < results.rows.length; i++) {
-      nodeList.push(nodeAnnouncement.nodeAnnouncementParser(results.rows[i].raw,results.rows[i].node_id))
-    }
-    response.status(200).json(nodeList)
-  })
-}
-
-
+// Query for testing channel_updates
 const getChannelUpdate = (request, response) => {
   client.query('SELECT * FROM "channel_updates" LIMIT 1;', (error, results) => {
     if (error) {
@@ -60,6 +35,7 @@ const getChannelUpdate = (request, response) => {
   })
 }
 
+// Query for testing node_announcement
 const nodeInfo = (request, response) => {
   client.query('SELECT * FROM "node_announcements" LIMIT 1;', (error, results) => {
     if (error) {
@@ -69,10 +45,37 @@ const nodeInfo = (request, response) => {
   })
 }
 
+// Query for returning info about a particular channel
+const getChannelProfile = (request, response) => {
+  console.log(request.params.scid)
+  client.query(`SELECT * FROM "channel_profile" WHERE scid = ${request.params.scid};`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows[0])
+  })
+}
+
+// Query for returning all channel_updates related to a channel
+const getChannelUpdates = (request, response) => {
+  client.query(`
+    SELECT * FROM "channel_updates" WHERE scid = ${request.params.scid};
+    `, (error, results) => {
+      if(error){
+          throw error
+      }
+      let temp = []
+      for (let i = 0; i < results.rows.length; i++) {
+          temp[i] = (channelUpdate.channelUpdateParser(results.rows[i].raw,results.rows[i].scid,results.rows[i].direction,results.rows[i].timestamp))
+      }
+      response.status(200).json(temp)
+  })
+}
+
 module.exports = {
     getChannelInfo,
     getChannelUpdate,
     nodeInfo,
-    getChannelList,
-    getNodeList,
+    getChannelProfile,
+    getChannelUpdates
 }
