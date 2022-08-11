@@ -5,7 +5,6 @@
 var pg = require('pg');
 const config = require('../config/default.json');
 var nodeAnnouncement = require('../controllers/nodeAnnouncement');
-const axios = require('axios').default;
 
 // PostgreSQL connection
 const port = config.server.port;
@@ -32,13 +31,13 @@ const checkNodeProfile = () => {
     })
 }
 
-const createNodeProfile = () => {
+const createNodeProfile = (offset) => {
     // perform a check if node_profile table exists, if not create it
     checkNodeProfile()
 
     // fetch node_announcement gossip message
     client.query(`
-    SELECT * FROM "node_announcements";
+    SELECT * FROM "node_announcements" LIMIT 5000 OFFSET ${offset};
     `, (error,results) => {
         if(error) {
             throw error
@@ -62,19 +61,29 @@ const createNodeProfile = () => {
                         if(error) {
                             throw error;
                         }
-                        console.log('Found: ', channels.rows.length, ' channels')
-                        const temp = [0]
+                        const temp = []
                         for(let j=0;j<channels.rows.length;j++) {
                             temp.push(`${channels.rows[j].scid}`)
                         }
-
-                        // Inserting node_profile into table
-                        client.query(`
-                        INSERT INTO node_profile (node_id, scid, rgb_color) VALUES ('${node_data.node_id}', ARRAY [${temp}], '${node_data.rgb_color}');`, (error, results) => {
-                            if(error) {
-                                throw error;
-                            }
-                        })
+                        if (channels.rows.length == 0) {
+                           // Inserting node_profile into table
+                            client.query(`
+                            INSERT INTO node_profile (node_id, rgb_color) VALUES ('${node_data.node_id}', '${node_data.rgb_color}');`, (error, results) => {
+                                if(error) {
+                                    throw error;
+                                }
+                                console.log('This node has no channels linked')
+                            }) 
+                        } else {
+                            // Inserting node_profile into table
+                            client.query(`
+                            INSERT INTO node_profile (node_id, scid, rgb_color) VALUES ('${node_data.node_id}', ARRAY [${temp}], '${node_data.rgb_color}');`, (error, results) => {
+                                if(error) {
+                                    throw error;
+                                }
+                                console.log('This node has: ', channels.rows.length, ' channels')
+                            })
+                        }
                     })
                 }
             })

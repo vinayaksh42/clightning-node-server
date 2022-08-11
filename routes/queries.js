@@ -72,10 +72,23 @@ const getChannelUpdates = (request, response) => {
   })
 }
 
+// Query for returning info about a particular node
+const getNodeInfo = (request, response) => {
+  client.query(`
+  SELECT * FROM "node_profile" WHERE node_id = '${request.params.nodeid}';
+  `, (error, results) => {
+    if(error) {
+      throw error;
+    }
+    response.status(200).json(results.rows[0])
+  })
+}
+
 module.exports = {
     getChannelInfo,
     getChannelUpdate,
     nodeInfo,
     getChannelProfile,
-    getChannelUpdates
+    getChannelUpdates,
+    getNodeInfo
 }
