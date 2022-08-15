@@ -52,3 +52,6 @@ app.get('/node_profile/:nodeid', db.fetchNodeProfile);
 app.listen(serverPort, () => {
     console.log(`App running on port ${serverPort}.`);
 })
+
+
+Channel.createChannelProfile()

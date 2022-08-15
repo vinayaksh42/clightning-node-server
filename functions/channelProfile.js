@@ -34,20 +34,18 @@ async function getIt(scid,data,node_id_1,node_id_2,channelsRawData,i) {
         .then(function (result) {
           axios.get(`https://blockstream.info/api/tx/${result.data[data.tx_id]}`)
             .then(function (txid) {
-              
               axios.get(`https://blockstream.info/api/tx/${txid.data.txid}/outspends`)
                 .then(function (result) {
                   let closingArray = []
                   let closingHeight = []
-                  for(let i=0;i<result.data.length;i++){
-                    if(result.data[i].spent){
-                      closingArray.push(`'${result.data[i].txid}'`)
-                      closingHeight.push(`'${result.data[i].status.block_height}'`)
+                  let j = data.output_index
+                    if(result.data[j].spent){
+                      closingArray.push(`'${result.data[j].txid}'`)
+                      closingHeight.push(`'${result.data[j].status.block_height}'`)
                     }else{
                       closingArray.push(`'${false}'`)
                       closingHeight.push(`'${false}'`)
                     }
-                  }
                   client.query(`
                     INSERT INTO channel_profile
                     (scid, amount_sat, closing_height, block, tx_id, output_index, node_id_1, node_id_2, txid, closing)
@@ -128,6 +126,7 @@ const createChannelProfile = () => {
         if (error) {
           throw error
         }
+        
         populateChannelProfile(channelsRawData,0)
       })
     })
