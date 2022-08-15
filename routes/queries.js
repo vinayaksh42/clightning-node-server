@@ -3,6 +3,7 @@ const config = require('../config/default.json');
 var channelAnnouncement = require('../controllers/channelAnnouncement');
 var channelUpdate = require('../controllers/channelUpdate');
 var nodeAnnouncement = require('../controllers/nodeAnnouncement');
+const Node = require('../functions/nodeProfile');
 
 // PostgreSQL connection
 const port = config.server.port;
@@ -30,7 +31,6 @@ const getChannelUpdate = (request, response) => {
     if (error) {
       throw error
     }
-    console.log(results.rows[0].raw)
     response.status(200).json(channelUpdate.channelUpdateParser(results.rows[0].raw,results.rows[0].scid,results.rows[0].direction,results.rows[0].timestamp))
   })
 }
@@ -84,11 +84,43 @@ const getNodeInfo = (request, response) => {
   })
 }
 
+// Query for creating a node profile and returning the same 
+const fetchNodeProfile = (request, response) => {
+  client.query(String.raw`
+  SELECT * FROM "node_announcements"
+  WHERE node_id = E'\\x${request.params.nodeid}' order by "timestamp" desc LIMIT 1;;
+  `, (error, results) => {
+    if(error) {
+      throw error;
+    }
+    const node_data = nodeAnnouncement.nodeAnnouncementParser(results.rows[0].raw,results.rows[0].node_id)
+    console.log(node_data.rgb_color)
+    // fetch all the channel_profile linked with this node
+    client.query(`
+    SELECT * FROM "channel_profile"
+    WHERE node_id_1 = '${node_data.node_id}' OR node_id_2 = '${node_data.node_id}';`, (error, channels) => {
+        if(error) {
+            throw error;
+        }
+        const temp = []
+        for(let j=0;j<channels.rows.length;j++) {
+            temp.push(`${channels.rows[j].scid}`)
+        }
+        response.status(200).json({
+          node_id: node_data.node_id,
+          scid: temp,
+          rgb_color: node_data.rgb_color
+         })
+    })
+  })
+}
+
 module.exports = {
     getChannelInfo,
     getChannelUpdate,
     nodeInfo,
     getChannelProfile,
     getChannelUpdates,
-    getNodeInfo
+    getNodeInfo,
+    fetchNodeProfile
 }

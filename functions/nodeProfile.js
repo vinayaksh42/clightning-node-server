@@ -92,5 +92,6 @@ const createNodeProfile = (offset) => {
 }
 
 module.exports = {
-    createNodeProfile
+    createNodeProfile,
+    checkNodeProfile
 }

@@ -19,31 +19,6 @@ var conString = `${username}://${username}:${password}@${host}:${port}/${dbName}
 var client = new pg.Client(conString);
 client.connect();
 
-client.query(`
-    SELECT * FROM "node_announcements";`, (error, results) => {
-        if(error) {
-            throw error;
-        }
-        const n = results.rows.length;
-		let i = 0;
-		// Cron Job for updating node profiles
-		var nodeProfileJob = new CronJob(
-			'*/45 * * * * * ',
-			function() {
-				Node.createNodeProfile(i)
-				if(i < n) {
-					i+=5000;
-				} else {
-					i=0;
-				}
-			},
-			null,
-			true,
-			'America/Los_Angeles'
-		);
-		nodeProfileJob.start();
-})
-
 // Cron Job for updating channel profile
 var channelProfileJob = new CronJob(
 	'0 * * * *',
@@ -55,7 +30,7 @@ var channelProfileJob = new CronJob(
 	'America/Los_Angeles'
 );
 
-
+channelProfileJob.start()
 
 app.use(bodyParser.json())
 app.use(
@@ -72,9 +47,7 @@ app.get('/node_list', db.nodeInfo);
 // Required queries
 app.get('/channel_profile/:scid', db.getChannelProfile);
 app.get('/channel_updates/:scid', db.getChannelUpdates);
-app.get('/node_profile/:nodeid', db.getNodeInfo);
-
-channelProfileJob.start();
+app.get('/node_profile/:nodeid', db.fetchNodeProfile);
 
 app.listen(serverPort, () => {
     console.log(`App running on port ${serverPort}.`);
